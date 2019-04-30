@@ -1,10 +1,28 @@
 import gensim
 import sys
+import numpy as np
+from numpy import linalg as LA
 
 from gensim.test.utils import common_texts, get_tmpfile, datapath
 from gensim.models import Word2Vec
 
 DATA_DIR = "../data/"
+
+def cosine_similarity(a, b):
+    """ Cosine similarity between vectors a and b. """
+    cos = np.dot(a, b) / (LA.norm(a) * LA.norm(b))
+    return cos
+
+def euclidean_similarity(a, b):
+    """ Euclidean similarity (1 - euclid. dist.) between vectors a and b. """
+    return LA.norm(a-b)
+
+
+def is_normalized(a):
+    """ Check if vector a is normalized. """
+    anorm = LA.norm(a)
+    print (anorm)
+    return anorm == 1
 
 def main():
 
@@ -31,10 +49,10 @@ def main():
 	print(model.wv.similar_by_word("king", topn=10, restrict_vocab=None))
 
 	# TODOS
-	# Add functions for cosine distance and euclidean distance
-	# Print euclidean distance between our model and woman
-	# Print euclidean distance between Mikolov model and woman
-	# Check if vectors are normalized - sum squares of each vector, if sums to 1 then normalized
+	# [V] Add functions for cosine distance and euclidean distance
+	# [] Print euclidean distance between our model and woman
+	# [] Print euclidean distance between Mikolov model and woman
+	# [V] Check if vectors are normalized - sum squares of each vector, if sums to 1 then normalized
 
 
 if __name__ == '__main__':
