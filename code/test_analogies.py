@@ -16,6 +16,7 @@ def init():
     parser.add_argument("-p", "--procnum", help="Number of processes", type=int)
     return parser.parse_args()
 
+@profile
 def check_analogy(model, analogy):
     """ Compute the similarity measures of the given analogy. """
     wv, wu, wvp, wup = analogy
@@ -29,6 +30,7 @@ def check_analogy(model, analogy):
     print('blahblahblah')
     return our_sim, mik_sim
 
+@profile
 def check_all_analogies(model, analogies, args):
     """ Get similarity measures of all analogies usingmultiprocessing. """
     pool = mp.Pool(processes=args.procnum)

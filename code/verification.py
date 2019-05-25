@@ -25,6 +25,7 @@ def is_normalized(a):
     print (anorm)
     return anorm == 1
 
+@profile
 def load_model(filename):
     """ Load model from file and return. """
     model_file = DATA_DIR + filename
