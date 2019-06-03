@@ -2,31 +2,38 @@ import pickle
 from tqdm import tqdm
 from sklearn.manifold import TSNE
 from matplotlib import pyplot as plt
+import matplotlib
 import time
 
 from analogies import parse_google_analogies
 import verification
 
-def project_2d(words_ours, words_miks):
+def project_2d(res_ours, res_miks):
+    words_ours, probs_ours = zip(*res_ours)
+    words_miks, probs_miks = zip(*res_miks)
     print(words_ours[0])
     vecs_ours = [model[w] for w in words_ours]
     vecs_miks = [model[w] for w in words_miks]
-    print('Projecting')
-    start_time = time.time()
-    proj_ours = tsne.fit(vecs_ours)
-    elapsed_time = time.time() - start_time
-    print('Projecting took {:.2f} sec'.format(elapsed_time))
-    proj_miks = tsne.fit(vecs_miks)
-
+    proj_ours = tsne.fit_transform(vecs_ours)
+    proj_miks = tsne.fit_transform(vecs_miks)
     xs_ours, ys_ours = proj_ours[:, 0], proj_ours[:, 1]
     xs_miks, ys_miks = proj_miks[:, 0], proj_miks[:, 1]
-    plt.scatter(xs_ours, ys_ours, color='blue')
-    plt.scatter(xs_miks, ys_miks, color='red')
+    cmap = matplotlib.cm.get_cmap('viridis')
+    normalize = matplotlib.colors.Normalize(vmin=min(probs_ours), vmax=max(probs_ours))
+    colors_ours = [cmap(normalize(value)) for value in probs_ours]
+    colors_miks = [cmap(normalize(value)) for value in probs_miks]
+    #plt.scatter(xs_ours, ys_ours, color='blue', alpha=probs_ours)
+    #plt.scatter(xs_miks, ys_miks, color='red', alpha=probs_miks)
+    #fig, ax = plt.subplots()
+    plt.scatter(xs_ours, ys_ours, color=colors_ours)
+    sc = plt.scatter(xs_miks, ys_miks, color=colors_miks)
     for w, x, y in zip(words_ours, xs_ours, ys_ours):
-        plt.annotate(w, xy=(x, y), xytext=(0,0), textcoords='offset points')
+        plt.annotate(w, xy=(x, y), xytext=(0,0), textcoords='offset points', color='blue')
     for w, x, y in zip(words_miks, xs_miks, ys_miks):
-        plt.annotate(w, xy=(x, y), xytext=(0,0), textcoords='offset points')
-
+        plt.annotate(w, xy=(x, y), xytext=(0,0), textcoords='offset points', color='red')
+    #plt.colorbar(sc)
+    #cax, _ = matplotlib.colorbar.make_axes(ax)
+    #cbar = matplotlib.colorbar.ColorbarBase(cax, cmap=cmap, norm=normalize)
     plt.xlim(min(xs_ours.min(), xs_miks.min())+0.00005, max(xs_ours.max(), xs_miks.max())+0.00005)
     plt.xlim(min(ys_ours.min(), ys_miks.min())+0.00005, max(ys_ours.max(), ys_miks.max())+0.00005)
     plt.savefig('temp.pdf')
@@ -56,7 +63,7 @@ if __name__ == '__main__':
             vec_target = model[target]
             res_ours, res_miks = results[i]
 
-            project_2d(list(zip(*res_ours))[0], list(zip(*res_miks))[0])
+            project_2d(res_ours, res_miks)
 
             vec_ours = model[res_ours[0][0]]
             vec_miks = model[res_miks[0][0]]
