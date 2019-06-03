@@ -16,7 +16,7 @@ def cosine_similarity(a, b):
 
 def euclidean_similarity(a, b):
     """ Euclidean similarity (1 - euclid. dist.) between vectors a and b. """
-    return LA.norm(a-b)
+    return 1 - LA.norm(a-b)
 
 
 def is_normalized(a):
@@ -25,7 +25,6 @@ def is_normalized(a):
     print (anorm)
     return anorm == 1
 
-@profile
 def load_model(filename):
     """ Load model from file and return. """
     model_file = DATA_DIR + filename

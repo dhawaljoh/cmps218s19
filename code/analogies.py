@@ -1,7 +1,7 @@
 
 DATA_DIR = "../data/"
 
-def parse_google_analogies(filename, type=None):
+def parse_google_analogies(filename, anlgtype=None):
     """ Parse file and return a list of dicts.
     Google's analogy data has 4 space separated words per line,
     except for lines starting with ":", which indicate types of analogy.
@@ -14,8 +14,8 @@ def parse_google_analogies(filename, type=None):
         for line in f:
             if line.startswith(":"):
                 curr_type = line[2:-1]
-                if type:
-                    if type != curr_type:
+                if anlgtype:
+                    if anlgtype != curr_type:
                         skip_type = True
                         continue
                     else:
@@ -25,7 +25,7 @@ def parse_google_analogies(filename, type=None):
                 analogy_dicts.append({})
 
             else:
-                if type:
+                if anlgtype:
                     if skip_type:
                         continue
                     else:
