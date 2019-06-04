@@ -9,6 +9,7 @@ from analogies import parse_google_analogies
 import verification
 
 def project_2d(res_ours, res_miks):
+    plt.cla()
     words_ours, probs_ours = zip(*res_ours)
     words_miks, probs_miks = zip(*res_miks)
     print(words_ours[0])
@@ -18,20 +19,22 @@ def project_2d(res_ours, res_miks):
     proj_miks = tsne.fit_transform(vecs_miks)
     xs_ours, ys_ours = proj_ours[:, 0], proj_ours[:, 1]
     xs_miks, ys_miks = proj_miks[:, 0], proj_miks[:, 1]
-    cmap = matplotlib.cm.get_cmap('viridis')
-    normalize = matplotlib.colors.Normalize(vmin=min(probs_ours), vmax=max(probs_ours))
-    colors_ours = [cmap(normalize(value)) for value in probs_ours]
-    colors_miks = [cmap(normalize(value)) for value in probs_miks]
+    #cmap = matplotlib.cm.get_cmap('viridis')
+    #normalize = matplotlib.colors.Normalize(vmin=min(probs_ours), vmax=max(probs_ours))
+    #colors_ours = [cmap(normalize(value)) for value in probs_ours]
+    #colors_miks = [cmap(normalize(value)) for value in probs_miks]
     #plt.scatter(xs_ours, ys_ours, color='blue', alpha=probs_ours)
     #plt.scatter(xs_miks, ys_miks, color='red', alpha=probs_miks)
     #fig, ax = plt.subplots()
-    plt.scatter(xs_ours, ys_ours, color=colors_ours)
-    sc = plt.scatter(xs_miks, ys_miks, color=colors_miks)
+    cm = plt.cm.get_cmap('RdYlBu')
+    sc_ours = plt.scatter(xs_ours, ys_ours, c=probs_ours, vmin=0, vmax=1, cmap=plt.cm.winter)
+    sc_miks = plt.scatter(xs_miks, ys_miks, c=probs_miks, vmin=0, vmax=1, cmap=plt.cm.Reds)
+    plt.colorbar(sc_ours)
+    plt.colorbar(sc_miks)
     for w, x, y in zip(words_ours, xs_ours, ys_ours):
         plt.annotate(w, xy=(x, y), xytext=(0,0), textcoords='offset points', color='blue')
     for w, x, y in zip(words_miks, xs_miks, ys_miks):
         plt.annotate(w, xy=(x, y), xytext=(0,0), textcoords='offset points', color='red')
-    #plt.colorbar(sc)
     #cax, _ = matplotlib.colorbar.make_axes(ax)
     #cbar = matplotlib.colorbar.ColorbarBase(cax, cmap=cmap, norm=normalize)
     plt.xlim(min(xs_ours.min(), xs_miks.min())+0.00005, max(xs_ours.max(), xs_miks.max())+0.00005)
