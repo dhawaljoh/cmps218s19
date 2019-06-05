@@ -14,8 +14,10 @@ def project_2d(res_ours, res_miks, anlgtype, anlg):
     words_miks, probs_miks = zip(*res_miks)
     vecs_ours = [model[w] for w in words_ours]
     vecs_miks = [model[w] for w in words_miks]
-    proj_ours = tsne.fit_transform(vecs_ours)
-    proj_miks = tsne.fit_transform(vecs_miks)
+    #proj_ours = tsne.fit_transform(vecs_ours)
+    #proj_miks = tsne.fit_transform(vecs_miks)
+    projs = tsne.fit_transform(vecs_ours + vecs_miks)
+    proj_ours, proj_miks = projs[: len(vecs_ours)], projs[len(vecs_ours): ]
     xs_ours, ys_ours = proj_ours[:, 0], proj_ours[:, 1]
     xs_miks, ys_miks = proj_miks[:, 0], proj_miks[:, 1]
     sc_ours = plt.scatter(xs_ours, ys_ours, c=probs_ours, vmin=0, vmax=1, cmap=plt.cm.get_cmap('winter_r'))
@@ -30,15 +32,14 @@ def project_2d(res_ours, res_miks, anlgtype, anlg):
     plt.xlim(min(ys_ours.min(), ys_miks.min())+0.00005, max(ys_ours.max(), ys_miks.max())+0.00005)
     a,b,c,d = anlg
     plt.title(a + ' is to ' + b + ' what ' + c + ' is to ' + d)
-    #plt.savefig(anlgtype + '_maxcos_' + '_'.join(anlg) +'.pdf')
-    plt.savefig(anlgtype + '_maxcos.pdf')
+    plt.savefig(anlgtype + '_maxcos.png')
     cb_ours.remove()
     cb_miks.remove()
     plt.cla()
 
 if __name__ == '__main__':
     anlgtypes = ['capital-common-countries', 'currency', 'city-in-state', 'family', 'gram1-adjective-to-adverb', 'gram2-opposite', 'gram6-nationality-adjective', 'gram8-plural']
-    #anlgtypes = ['capital-common-countries', 'family']
+    anlgtypes = ['capital-common-countries', 'family']
 
     tsne = TSNE(n_components=2, random_state=0)
 
@@ -75,9 +76,6 @@ if __name__ == '__main__':
             if cos_ours > max_cos_ours:
                 project_2d(res_ours, res_miks, anlgtype, anlg)
             max_cos_ours = max(max_cos_ours, cos_ours)
-
-            #if i > 10:
-            #    break
 
         print('our avg cosine similarity:\t\t' + str(cos_sum_ours/anlg_num))
         print('Mikolov avg cosine similarity:\t\t' + str(cos_sum_miks/anlg_num))
